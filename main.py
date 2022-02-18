@@ -1,5 +1,6 @@
 import clock
 from consts import *
+from keyframe import Keyframe
 
 import tkinter as tk
 
@@ -9,47 +10,25 @@ ROWS = 3
 
 class MirrorUI(tk.Tk):
 
-    # First argument is the widget to modify, second is a boolean value as follows:
-    #   True to turn on the selection border, false to hide it
-    def set_border(self, widget, state):
-        if widget:
-            if state:
-                widget.config(highlightbackground=BRDRCOL, highlightcolor=BRDRCOL, highlightthickness=BRDRWID)
-            else:
-                widget.config(highlightbackground=BGCOL, highlightcolor=BGCOL, highlightthickness=BRDRWID)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self.active_widget_loc = {'row': 0, 'col': 0}
-        self.active_widget = None
-
-        # Create window
+        # Set fullscreen, hide mouse cursor
         self.attributes('-fullscreen', True)
         self.configure(bg=BGCOL, cursor='none')
 
-        # Black background so as not to interfere with the functionaly of the mirror
-        self.content = tk.Frame(self, bg=BGCOL)
-        self.content.pack(expand=True, fill='both')
-        self.content.rowconfigure(ROWS)
-        self.content.columnconfigure(COLS)
+        self.content = None
+        self.menu = None
 
-        self.content.bind('<A>', self.test)
-        self.content.focus_set()
 
-        self.bind_main_inputs()
+    # Bind all of the keys that the keyframe passed in needs
+    def bind_keyframe_inputs(self, keyframe):
+        kfbinds = keyframe.get_binds()
+        for kfbind in kfbinds:
+            self.bind(kfbind, kfbinds[kfbind])
 
-    def test(self):
-        print('test')
-
-    def bind_main_inputs(self):
-        # Configure input listeners
-        self.bind('<Up>', self.navigate)
-        self.bind('<Left>', self.navigate)
-        self.bind('<Down>', self.navigate)
-        self.bind('<Right>', self.navigate)
-        self.bind('<Return>', self.open_menu)
-
+    # Unbind all keys except blackout, which can be used anywhere
     def unbind_main_inputs(self):
         self.unbind('<Up>')
         self.unbind('<Left>')
@@ -57,73 +36,61 @@ class MirrorUI(tk.Tk):
         self.unbind('<Right>')
         self.unbind('<Return>')
 
-    def open_menu(self, event):
+    # Replaces the current screen with the menu of the currently selected widget
+    # Event argument is not used but is automatically passed in by tkinter
+    def open_menu(self, event=None):
+
+        # Unbind and hide main screen
         self.unbind_main_inputs()
         self.content.pack_forget()
         
-        self.active_widget.get_settings_menu(self).pack(expand=True, fill='both')
-
-    # Returns the widget at the given location within the grid
-    def get_widget_from_coords(self, row, column):
-        for widget in self.content.children.values():
-            info = widget.grid_info()
-            if info['row'] == row and info['column'] == column:
-                return widget
-        return None
-
-    def navigate(self, event):
-        old_widget = self.active_widget
-
-        moveflag = False
+        # Pack and bind the new menu
+        self.menu = self.content.active_widget.get_settings_menu(self)
+        self.menu.pack(expand=True, fill='both')
+        self.menu.focus_set()
+        self.bind_keyframe_inputs(self.menu)
         
-        if event.keysym == 'Up' and self.active_widget_loc['row'] > 0:
-            self.active_widget_loc['row'] -= 1
-            moveflag = True
-        elif event.keysym == 'Down' and self.active_widget_loc['row'] < ROWS-1:
-            self.active_widget_loc['row'] += 1
-            moveflag = True
-        elif event.keysym == 'Left' and self.active_widget_loc['col'] > 0:
-            self.active_widget_loc['col'] -= 1
-            moveflag = True
-        elif event.keysym == 'Right' and self.active_widget_loc['col'] < COLS-1:
-            self.active_widget_loc['col'] += 1
-            moveflag = True
 
-        if moveflag:
-            self.active_widget = self.get_widget_from_coords(
-                    self.active_widget_loc['row'],
-                    self.active_widget_loc['col'])
-            
-            self.set_border(old_widget, False)
-            self.set_border(self.active_widget, True)
+    # Set the main menu and display.
+    # If contents is empty, return to stored main menu (as in after returning from a settings menu)
+    def set_main_contents(self, contents=None):
+        # Remove current menu if needed
+        if self.menu != None:
+            self.menu.pack_forget()
+            self.menu.destroy()
+            del(self.menu)
+            self.menu = None
 
-        if DEBUG:
-            print(f'{self.active_widget_loc["row"]}, {self.active_widget_loc["col"]}, {self.active_widget}')
+        if contents != None:
+            # Add contents to the window
+            self.content = contents
+            self.content.pack(expand=True, fill='both')
+            self.bind_keyframe_inputs(self.content)
+        else:
+            # Restore last contents
+            self.content.pack(expand=True, fill='both')
+            self.bind_keyframe_inputs(self.content)
 
 
 if __name__ == '__main__':
     mui = MirrorUI()
 
+    content = Keyframe(mui, rows=ROWS, columns=COLS)
 
     # Clock widget
-    clockwidget = clock.ClockWidget(mui.content)
-    clockwidget.config(bg=BGCOL, fg=FGCOL, font=FONT)
-    clockwidget.config(highlightbackground=BGCOL, highlightcolor=BGCOL, highlightthickness=BRDRWID)
-    clockwidget.update()
-    clockwidget.grid(row=0, column=0)
+    clockwidget = clock.ClockWidget(content)
+    content.add_widget(clockwidget, 0, 0)
+    content.set_nav_axes('vh')
+
+    content.add_bind('<Return>', mui.open_menu)
+
+    mui.set_main_contents(content)
+
 
     # test
-    clockwidget2 = clock.ClockWidget(mui.content)
-    clockwidget2.config(bg=BGCOL, fg=FGCOL, font=FONT)
-    clockwidget2.config(highlightbackground=BGCOL, highlightcolor=BGCOL, highlightthickness=BRDRWID)
-    clockwidget2.update()
-    clockwidget2.grid(row=1, column=0)
-
-    # test
-    clockwidget3 = clock.ClockWidget(mui.content)
-    clockwidget3.config(bg=BGCOL, fg=FGCOL, font=FONT)
-    clockwidget3.config(highlightbackground=BGCOL, highlightcolor=BGCOL, highlightthickness=BRDRWID)
-    clockwidget3.update()
-    clockwidget3.grid(row=2, column=0)
+    clockwidget1 = clock.ClockWidget(content)
+    content.add_widget(clockwidget1, 0, 1)
+    clockwidget2 = clock.ClockWidget(content)
+    content.add_widget(clockwidget2, 0, 2)
 
     mui.mainloop()
