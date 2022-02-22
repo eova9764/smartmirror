@@ -19,8 +19,10 @@ class Keyframe(tk.Frame):
             '<Right>': self.navigate,
         }
 
-        self.rowconfigure(self.rows)
-        self.columnconfigure(self.columns)
+        for i in range(self.rows):
+            self.rowconfigure(i, weight=1)
+        for i in range(self.columns):
+            self.columnconfigure(i, weight=1)
         # Black background so as not to interfere with the functionaly of the mirror
         self.config(bg=BGCOL)
         self.nav = {'u': 1, 'l': 1, 'd': 1, 'r': 1}

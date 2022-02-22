@@ -21,7 +21,6 @@ class ClockWidget(tk.Label):
         timestr = ''
         timestr += '%I' if self.settings['hr'] == 12 else '%H'
         timestr += ':%M:%S' if self.settings['hr'] == 24 else ':%M:%S %p'
-        #strftime('%I:%M:%S %p')
         time = strftime(timestr)
         self.config(text=time)
         self.after(1000, self.update)
@@ -66,10 +65,8 @@ class ClockConfig(Keyframe):
         if self.hr_format.get_value() == '12 hour':
             self.settings['hr'] = 12
         elif self.hr_format.get_value() == '24 hour':
-            print('set 24')
+            self.settings['hr'] = 24
 
-        print(self.settings)
-        
     # Event callback for changing an entry
     def setting_change(self, event):
         if event.keysym == 'Up':
