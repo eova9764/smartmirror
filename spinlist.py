@@ -14,6 +14,11 @@ class Spinlist(tk.Label):
 
         self.config(bg=BGCOL, fg=FGCOL, font=FONT)
 
+    # Set which item is active (value must already exist in items)
+    def set_item(self, value):
+        self.current_item = self.items.index(value)
+        self.update_text()
+
     # Set whether or not this is a circular list
     def set_circular(self, boolean):
         prev_val = self.circular

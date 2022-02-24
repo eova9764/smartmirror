@@ -5,4 +5,4 @@ FGCOL = 'white'
 BRDRWID = 2
 BRDRCOL = 'white'
 
-FONT = ('Arial, 40')
+FONT = ('Roboto', 40)
