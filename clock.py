@@ -12,7 +12,6 @@ from spinlist import Spinlist
 class ClockWidget(tk.Label):
 
     def __init__(self, *args, cfg=None, **kwargs):
-        print(cfg)
         super().__init__(*args, **kwargs)
 
         self.config(bg=BGCOL, fg=FGCOL, font=FONT)
@@ -22,7 +21,6 @@ class ClockWidget(tk.Label):
         tzs = list(zoneinfo.available_timezones())
         tzs.sort()
 
-        print(cfg)
         self.settings = {
                 'hr':Setting('Hour format', ['12 hour', '24 hour'],
                         current_val=cfg['hour format'] if cfg else None ),

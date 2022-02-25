@@ -1,5 +1,6 @@
 import clock
 from consts import *
+import greeting
 from keyframe import Keyframe
 
 import configparser
@@ -83,24 +84,21 @@ if __name__ == '__main__':
         cfg = configparser.ConfigParser()
         cfg.read(CFG_LOC)
 
-    # Clock widget
+    # Clock widget and greeting
     if cfg and 'Clock Settings' in cfg:
         clockwidget = clock.ClockWidget(content, cfg=cfg['Clock Settings'])
+        greetingwidget = greeting.GreetingWidget(content, cfg=cfg['Clock Settings'])
     else:
         clockwidget = clock.ClockWidget(content)
+        greetingwidget = greeting.GreetingWidget(content)
 
     content.add_widget(clockwidget, 0, 0)
-    content.set_nav_axes('vh')
+    content.add_widget(greetingwidget, 0, 1)
 
+    # Setup keyboard input
+    content.set_nav_axes('vh')
     content.add_bind('<Return>', mui.open_menu)
 
     mui.set_main_contents(content)
-
-
-    # test
-    clockwidget1 = clock.ClockWidget(content)
-    content.add_widget(clockwidget1, 0, 1)
-    clockwidget2 = clock.ClockWidget(content)
-    content.add_widget(clockwidget2, 0, 2)
 
     mui.mainloop()
