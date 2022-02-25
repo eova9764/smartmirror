@@ -2,8 +2,9 @@ import clock
 from consts import *
 from keyframe import Keyframe
 
+import configparser
+import os
 import tkinter as tk
-
 
 COLS = 1
 ROWS = 3
@@ -77,8 +78,17 @@ if __name__ == '__main__':
 
     content = Keyframe(mui, rows=ROWS, columns=COLS)
 
+    cfg = None
+    if os.path.exists(CFG_LOC):
+        cfg = configparser.ConfigParser()
+        cfg.read(CFG_LOC)
+
     # Clock widget
-    clockwidget = clock.ClockWidget(content)
+    if cfg and 'Clock Settings' in cfg:
+        clockwidget = clock.ClockWidget(content, cfg=cfg['Clock Settings'])
+    else:
+        clockwidget = clock.ClockWidget(content)
+
     content.add_widget(clockwidget, 0, 0)
     content.set_nav_axes('vh')
 

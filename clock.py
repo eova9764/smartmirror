@@ -1,6 +1,4 @@
-import configparser
 import datetime
-import os
 from time import strftime
 import tkinter as tk
 import zoneinfo
@@ -13,7 +11,8 @@ from spinlist import Spinlist
 
 class ClockWidget(tk.Label):
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, cfg=None, **kwargs):
+        print(cfg)
         super().__init__(*args, **kwargs)
 
         self.config(bg=BGCOL, fg=FGCOL, font=FONT)
@@ -23,18 +22,12 @@ class ClockWidget(tk.Label):
         tzs = list(zoneinfo.available_timezones())
         tzs.sort()
 
-        cfg = configparser.ConfigParser()
-        if(os.path.exists(CFG_LOC)):
-            cfg.read(CFG_LOC)
-            cfgread = True
-        else:
-            cfgread = False
-            
+        print(cfg)
         self.settings = {
                 'hr':Setting('Hour format', ['12 hour', '24 hour'],
-                        current_val=cfg['Clock Settings']['hour format'] if cfgread else None ),
+                        current_val=cfg['hour format'] if cfg else None ),
                 'tz':Setting('Time zone', tzs,
-                        current_val=cfg['Clock Settings']['time zone'] if cfgread else 'US/Michigan'),
+                        current_val=cfg['time zone'] if cfg else 'US/Michigan'),
         }
 
         # No longer needed after being stored in settings
