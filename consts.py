@@ -6,3 +6,5 @@ BRDRWID = 2
 BRDRCOL = 'white'
 
 FONT = ('Roboto', 40)
+
+CFG_LOC = 'cfg.ini'

@@ -1,3 +1,4 @@
+import configparser
 import tkinter as tk
 
 from consts import *
@@ -45,7 +46,7 @@ class ConfigMenu(Keyframe):
             idx += 1
 
         # 1st row has title only, select third row
-        self.active_widget_loc['row'] = 1
+        self.active_widget_loc['row'] = 2
         self.select_at(0, 2)
 
         # Add keybinds not taken care of by Keyframe superclass
@@ -53,12 +54,18 @@ class ConfigMenu(Keyframe):
         self.add_bind('<Down>', self.setting_change)
         self.add_bind('<Return>', self.exit)
 
-
     # Exit the menu
     def exit(self, event):
+        cfg = configparser.ConfigParser()
+        cfg[self.titlestr] = {}
         # Update settings
         for item in self.settings_widgets:
             self.settings[item].set_value(self.settings_widgets[item].get_value())
+            cfg[self.titlestr][self.settings[item].get_name()] = self.settings_widgets[item].get_value()
+
+        with open(CFG_LOC, 'w') as cfile:
+            cfg.write(cfile)
+
         self.root.set_main_contents()
         self.widget.set_settings(self.settings)
 
