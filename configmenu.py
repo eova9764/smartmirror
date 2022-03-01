@@ -17,11 +17,11 @@ class ConfigMenu(Keyframe):
         self.settings = widget.get_settings()
         self.settings_widgets = {}
 
-        super().__init__(root, *args, **kwargs, rows=3, columns=len(self.settings))
+        super().__init__(root, *args, **kwargs, columns=20, rows=len(self.settings)+19)
 
         
-        # Allow only horizontal nav (vertical arrows change setting value)
-        self.set_nav_axes('h')
+        # Allow only vertical nav (horizontal arrows change setting value)
+        self.set_nav_axes('v')
 
         # Add menu title
         self.title = tk.Label(self, text=self.titlestr, bg=BGCOL, fg=FGCOL, font=FONT)
@@ -34,7 +34,7 @@ class ConfigMenu(Keyframe):
 
             # Setting name
             setting_name = tk.Label(self, text=entry.name, bg=BGCOL, fg=FGCOL, font=FONT)
-            self.add_widget(setting_name, idx, 1)
+            self.add_widget(setting_name, 0, idx+1)
             
             # Spinlist
             new_widget = Spinlist(self)
@@ -42,16 +42,17 @@ class ConfigMenu(Keyframe):
             new_widget.set_circular(entry.circular)
             new_widget.set_item(self.settings[item].get_value())
             self.settings_widgets[item] = new_widget
-            self.add_widget(new_widget, idx, 2)
+            self.add_widget(new_widget, 1, idx+1)
             idx += 1
 
-        # 1st row has title only, select third row
-        self.active_widget_loc['row'] = 2
-        self.select_at(0, 2)
+        # Select the first Spinlist (row 0 has title, col 0 has settings names)
+        self.active_widget_loc['col'] = 1
+        self.active_widget_loc['row'] = 1
+        self.select_at(1, 1)
 
         # Add keybinds not taken care of by Keyframe superclass
-        self.add_bind('<Up>', self.setting_change)
-        self.add_bind('<Down>', self.setting_change)
+        self.add_bind('<Right>', self.setting_change)
+        self.add_bind('<Left>', self.setting_change)
         self.add_bind('<Return>', self.exit)
 
     # Exit the menu
@@ -71,7 +72,7 @@ class ConfigMenu(Keyframe):
 
     # Event callback for changing an entry
     def setting_change(self, event):
-        if event.keysym == 'Up':
+        if event.keysym == 'Right':
             self.active_widget.prev_item()
-        elif event.keysym == 'Down':
+        elif event.keysym == 'Left':
             self.active_widget.next_item()
