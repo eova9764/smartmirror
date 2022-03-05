@@ -4,6 +4,7 @@ from consts import *
 import greeting
 import inweather
 from keyframe import Keyframe
+import outweather
 
 import configparser
 import os
@@ -116,8 +117,10 @@ if __name__ == '__main__':
     # Weather widgets
     if cfg and 'Weather settings' in cfg:
         inweatherwidget = inweather.InWeather(content, cfg=cfg['Weather settings'])
+        outweatherwidget = outweather.OutWeather(content, cfg=cfg['Weather settings'])
     else:
         inweatherwidget = inweather.InWeather(content)
+        outweatherwidget = outweather.OutWeather(content)
 
     # Battery widget
     battwidget = battery.BatteryWidget(content)
@@ -129,6 +132,7 @@ if __name__ == '__main__':
     content.add_widget(greetingwidget, 1, 3)
     content.add_widget(inweatherwidget, 1, 0)
     content.add_widget(battwidget, 3, 0)
+    content.add_widget(outweatherwidget, 2, 0)
 
     # Setup keyboard input
     content.set_nav_axes('vh')

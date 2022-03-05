@@ -17,23 +17,23 @@ class BatteryWidget(tk.Label):
 
         ## Charge level images
         # Full
-        self.batt_full = batt_img.crop([0, 0, width/6, height])
-        self.batt_full_tk = ImageTk.PhotoImage(self.batt_full)
+        batt_full = batt_img.crop([0, 0, width/6, height])
+        self.batt_full_tk = ImageTk.PhotoImage(batt_full)
         # 80%
-        self.batt_80 = batt_img.crop([width/6, 0, width/6*2, height])
-        self.batt_80_tk = ImageTk.PhotoImage(self.batt_80)
+        batt_80 = batt_img.crop([width/6, 0, width/6*2, height])
+        self.batt_80_tk = ImageTk.PhotoImage(batt_80)
         # 60%
-        self.batt_60 = batt_img.crop([width/6*2, 0, width/6*3, height])
-        self.batt_60_tk = ImageTk.PhotoImage(self.batt_60)
+        batt_60 = batt_img.crop([width/6*2, 0, width/6*3, height])
+        self.batt_60_tk = ImageTk.PhotoImage(batt_60)
         # 40%
-        self.batt_40 = batt_img.crop([width/6*3, 0, width/6*4, height])
-        self.batt_40_tk = ImageTk.PhotoImage(self.batt_40)
+        batt_40 = batt_img.crop([width/6*3, 0, width/6*4, height])
+        self.batt_40_tk = ImageTk.PhotoImage(batt_40)
         # 20%
-        self.batt_20 = batt_img.crop([width/6*4, 0, width/6*5, height])
-        self.batt_20_tk = ImageTk.PhotoImage(self.batt_20)
+        batt_20 = batt_img.crop([width/6*4, 0, width/6*5, height])
+        self.batt_20_tk = ImageTk.PhotoImage(batt_20)
         # Charging
-        self.batt_chrg = batt_img.crop([width/6*5, 0, width, height])
-        self.batt_chrg_tk = ImageTk.PhotoImage(self.batt_chrg)
+        batt_chrg = batt_img.crop([width/6*5, 0, width, height])
+        self.batt_chrg_tk = ImageTk.PhotoImage(batt_chrg)
 
         # Numeral value
         self.value = tk.Label(self)
@@ -69,3 +69,6 @@ class BatteryWidget(tk.Label):
 
         # Update every 1 minute
         self.after(1000 * 60, self.update)
+
+    def get_settings_menu(self, _):
+        return None
