@@ -41,8 +41,8 @@ class ClockWidget(tk.Label):
         self.config(text=time)
         self.after(1000, self.update)
 
-    def get_settings_menu(self, root):
-        return ConfigMenu(root, self, title='Clock Settings')
+    def get_settings_menu(self, root, exiting=False):
+        return ConfigMenu(root, self, exiting, title='Clock Settings')
 
     def get_settings(self):
         return self.settings

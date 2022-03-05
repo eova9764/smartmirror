@@ -1,14 +1,27 @@
+import battery
 import clock
 from consts import *
 import greeting
+import inweather
 from keyframe import Keyframe
 
 import configparser
 import os
+import signal
+import sys
 import tkinter as tk
 
-COLS = 1
-ROWS = 3
+COLS = 4
+ROWS = 4
+
+def close_cleanup():
+
+
+    # Open each menu with the exiting flag set to true to force them to write
+    # out their current configs
+    mui.open_menu(clockwidget.get_settings_menu(mui, exiting=True))
+    mui.open_menu(inweatherwidget.get_settings_menu(mui, exiting=True))
+    exit()
 
 class MirrorUI(tk.Tk):
 
@@ -16,13 +29,14 @@ class MirrorUI(tk.Tk):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        # Set fullscreen, hide mouse cursor
+        # Set fullscreen, hide mouse cursor, set exit method
         self.attributes('-fullscreen', True)
         self.configure(bg=BGCOL, cursor='none')
+        self.wait_visibility(self)
+        self.protocol("WM_DELETE_WINDOW", close_cleanup)
 
         self.content = None
         self.menu = None
-
 
     # Bind all of the keys that the keyframe passed in needs
     def bind_keyframe_inputs(self, keyframe):
@@ -42,15 +56,17 @@ class MirrorUI(tk.Tk):
     # Event argument is not used but is automatically passed in by tkinter
     def open_menu(self, event=None):
 
-        # Unbind and hide main screen
-        self.unbind_main_inputs()
-        self.content.pack_forget()
-        
-        # Pack and bind the new menu
         self.menu = self.content.active_widget.get_settings_menu(self)
-        self.menu.pack(expand=True, fill='both')
-        self.menu.focus_set()
-        self.bind_keyframe_inputs(self.menu)
+
+        if self.menu != None:
+            # Unbind and hide main screen
+            self.unbind_main_inputs()
+            self.content.pack_forget()
+            
+            # Pack and bind the new menu
+            self.menu.pack(expand=True, fill='both')
+            self.menu.focus_set()
+            self.bind_keyframe_inputs(self.menu)
         
 
     # Set the main menu and display.
@@ -73,8 +89,13 @@ class MirrorUI(tk.Tk):
             self.content.pack(expand=True, fill='both')
             self.bind_keyframe_inputs(self.content)
 
+def sigint_handler(signal, frame):
+    print('KeyboardInterrupt... exiting')
+    sys.exit(0)
 
 if __name__ == '__main__':
+    signal.signal(signal.SIGINT, sigint_handler)
+
     mui = MirrorUI()
 
     content = Keyframe(mui, rows=ROWS, columns=COLS)
@@ -92,8 +113,22 @@ if __name__ == '__main__':
         clockwidget = clock.ClockWidget(content)
         greetingwidget = greeting.GreetingWidget(content)
 
+    # Weather widgets
+    if cfg and 'Weather settings' in cfg:
+        inweatherwidget = inweather.InWeather(content, cfg=cfg['Weather settings'])
+    else:
+        inweatherwidget = inweather.InWeather(content)
+
+    # Battery widget
+    battwidget = battery.BatteryWidget(content)
+
+    with open(CFG_LOC, 'w') as cfgfile:
+        cfgfile.write('')
+
     content.add_widget(clockwidget, 0, 0)
-    content.add_widget(greetingwidget, 0, 1)
+    content.add_widget(greetingwidget, 1, 3)
+    content.add_widget(inweatherwidget, 1, 0)
+    content.add_widget(battwidget, 3, 0)
 
     # Setup keyboard input
     content.set_nav_axes('vh')
@@ -102,3 +137,5 @@ if __name__ == '__main__':
     mui.set_main_contents(content)
 
     mui.mainloop()
+
+

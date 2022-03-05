@@ -35,3 +35,6 @@ class GreetingWidget(tk.Label):
         self.config(text=f'Good {time_of_day}')
         ## Update every 5 minutes
         self.after(5 * 60 * 1000, self.update)
+
+    def get_settings_menu(self, _):
+        return None

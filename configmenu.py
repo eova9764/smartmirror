@@ -6,7 +6,7 @@ from keyframe import Keyframe
 from spinlist import Spinlist
 
 class ConfigMenu(Keyframe):
-    def __init__(self, root, widget, *args, **kwargs):
+    def __init__(self, root, widget, exiting=False, *args, **kwargs):
         # 1 row for title and 2 for settings (1 name, 1 value), 1 column per setting
         self.titlestr = kwargs.pop('title')
 
@@ -55,8 +55,11 @@ class ConfigMenu(Keyframe):
         self.add_bind('<Left>', self.setting_change)
         self.add_bind('<Return>', self.exit)
 
+        if exiting:
+            self.exit()
+
     # Exit the menu
-    def exit(self, event):
+    def exit(self, event=None):
         cfg = configparser.ConfigParser()
         cfg[self.titlestr] = {}
         # Update settings
@@ -64,8 +67,15 @@ class ConfigMenu(Keyframe):
             self.settings[item].set_value(self.settings_widgets[item].get_value())
             cfg[self.titlestr][self.settings[item].get_name()] = self.settings_widgets[item].get_value()
 
-        with open(CFG_LOC, 'w') as cfile:
-            cfg.write(cfile)
+        # When simply closing the menu, exit function is called from tkinter,
+        # which passes in an event object. There is no need to write to the
+        # config file on disk in this case, and doing so will cause config
+        # sections to be double written which will cause errors on the next
+        # startup. When closing the entire app, this is called directly with no
+        # event parameter, write out to disk
+        if event == None:
+            with open(CFG_LOC, 'a') as cfile:
+                cfg.write(cfile)
 
         self.root.set_main_contents()
         self.widget.set_settings(self.settings)
