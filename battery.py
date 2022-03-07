@@ -11,6 +11,8 @@ class BatteryWidget(tk.Label):
         super().__init__(*args, **kwargs)
 
         self.settings = {}
+        
+        self.config(highlightbackground=BGCOL, highlightcolor=BGCOL, highlightthickness=BRDRWID)
 
         batt_img = Image.open('img/battery-xsm.png').convert('RGBA')
         width, height = batt_img.size

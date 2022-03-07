@@ -1,10 +1,12 @@
 import battery
+import calendar
 import clock
 from consts import *
 import greeting
 import inweather
 from keyframe import Keyframe
 import outweather
+import tasks
 
 import configparser
 import os
@@ -110,9 +112,11 @@ if __name__ == '__main__':
     if cfg and 'Clock Settings' in cfg:
         clockwidget = clock.ClockWidget(content, cfg=cfg['Clock Settings'])
         greetingwidget = greeting.GreetingWidget(content, cfg=cfg['Clock Settings'])
+        calendarwidget = calendar.Calendar(content, cfg=cfg['Clock Settings'])
     else:
         clockwidget = clock.ClockWidget(content)
         greetingwidget = greeting.GreetingWidget(content)
+        calendarwidget = calendar.Calendar(content)
 
     # Weather widgets
     if cfg and 'Weather settings' in cfg:
@@ -125,6 +129,8 @@ if __name__ == '__main__':
     # Battery widget
     battwidget = battery.BatteryWidget(content)
 
+    taskwidget = tasks.Tasks(content)
+
     with open(CFG_LOC, 'w') as cfgfile:
         cfgfile.write('')
 
@@ -133,6 +139,8 @@ if __name__ == '__main__':
     content.add_widget(inweatherwidget, 1, 0)
     content.add_widget(battwidget, 3, 0)
     content.add_widget(outweatherwidget, 2, 0)
+    content.add_widget(taskwidget, 0, 1)
+    content.add_widget(calendarwidget, 0, 2)
 
     # Setup keyboard input
     content.set_nav_axes('vh')

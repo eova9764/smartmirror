@@ -1,3 +1,5 @@
 __pycache__
 *.swp
 cfg.ini
+calendar.txt
+tasks.txt

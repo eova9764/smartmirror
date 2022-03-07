@@ -10,11 +10,12 @@ class OutWeather(tk.Label):
     def __init__(self, *args, cfg=None, **kwargs):
         super().__init__(*args, **kwargs)
 
-        if cfg: print('cfg')
         self.settings = {
                 'unit':Setting('Unit', ['Farenheit', 'Celcius'],
                         current_val=cfg['unit'] if cfg else 'Farenheit')
         }
+
+        self.config(highlightbackground=BGCOL, highlightcolor=BGCOL, highlightthickness=BRDRWID)
 
         icons_img = Image.open('img/weather-sm.png')
         width, height = icons_img.size
