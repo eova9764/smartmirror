@@ -50,14 +50,14 @@ class Spinlist(tk.Label):
     def update_text(self):
         # Arrows needed on both ends
         if self.circular:
-            self.config(text=f'⮶ {self.items[self.current_item]} ⮵')
+            self.config(text=f'← {self.items[self.current_item]} →')
         else:
             # Only down arrow needed
             if self.current_item == 0:
-                self.config(text=f'⮶ {self.items[self.current_item]}')
+                self.config(text=f'← {self.items[self.current_item]}')
             # Only up arrow needed
             elif self.current_item == self.item_count()-1:
-                self.config(text=f'{self.items[self.current_item]} ⮵')
+                self.config(text=f'{self.items[self.current_item]} →')
             
 
     # Selects the next item
