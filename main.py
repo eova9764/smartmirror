@@ -28,6 +28,19 @@ def close_cleanup():
 
 class MirrorUI(tk.Tk):
 
+    # Called when sleep button is pressed to hide/show the ui
+    def toggle_ui_hide(self, _):
+        if self.ui_visible:
+            self.blank = tk.Frame(self)
+            self.blank.config(bg=BGCOL)
+            self.blank.place(x=0, y=0, width=self.winfo_screenwidth(), height=self.winfo_screenheight())
+            self.blank.tkraise()
+            self.ui_visible = False
+        else:
+            self.blank.destroy()
+            self.update()
+            self.ui_visible = True
+            print('was false now true')
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -40,6 +53,9 @@ class MirrorUI(tk.Tk):
 
         self.content = None
         self.menu = None
+
+        self.ui_visible = True
+        self.bind('<n>', self.toggle_ui_hide)
 
     # Bind all of the keys that the keyframe passed in needs
     def bind_keyframe_inputs(self, keyframe):
@@ -142,6 +158,7 @@ if __name__ == '__main__':
     content.add_widget(taskwidget, 0, 1)
     content.add_widget(calendarwidget, 0, 2)
 
+
     # Setup keyboard input
     content.set_nav_axes('vh')
     content.add_bind('<Return>', mui.open_menu)
@@ -149,5 +166,3 @@ if __name__ == '__main__':
     mui.set_main_contents(content)
 
     mui.mainloop()
-
-
