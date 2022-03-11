@@ -1,3 +1,4 @@
+from IO import BME280
 import tkinter as tk
 
 from configmenu import ConfigMenu
@@ -30,13 +31,21 @@ class InWeather(tk.Label):
         self.press.config(bg=BGCOL, fg=FGCOL, font=FONT_SM)
         self.press.place(relx=.20, rely=.7)
 
+        self.tempsens = BME280.BME_Init()
+
         self.update()
 
     def update(self):
-        # TODO: update with actual temp from Joey's IO module
-        self.temp.config(text='69 F' if self.settings['unit'].get_value() == 'Farenheit' else '20.5 C')
-        self.humid.config(text='69 %')
-        self.press.config(text='1013.23 hPa')
+        temp_val = self.tempsens.get_temperature()
+        unit = 'C'
+        
+        if self.settings['unit'].get_value() == 'Farenheit':
+            temp_val = temp_val * (9/5) + 32
+            unit = 'F'
+
+        self.temp.config(text=f'{temp_val:5.1f} {unit}')
+        self.humid.config(text=f'{self.tempsens.get_humidity():5.1f} %rh')
+        self.press.config(text=f'{self.tempsens.get_pressure():5.1f} hPa')
 
         self.after(1000, self.update)
 
