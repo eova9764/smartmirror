@@ -46,3 +46,6 @@ class Calendar(tk.Label):
         self.event_text.config(text='\n'.join(self.events))
         
         self.after(1000, self.update)
+
+    def get_settings_menu(self, _, exiting=False):
+        return None
