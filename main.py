@@ -75,17 +75,18 @@ class MirrorUI(tk.Tk):
     # Event argument is not used but is automatically passed in by tkinter
     def open_menu(self, event=None):
 
-        self.menu = self.content.active_widget.get_settings_menu(self)
+        if self.content.active_widget != None:
+            self.menu = self.content.active_widget.get_settings_menu(self)
 
-        if self.menu != None:
-            # Unbind and hide main screen
-            self.unbind_main_inputs()
-            self.content.pack_forget()
-            
-            # Pack and bind the new menu
-            self.menu.pack(expand=True, fill='both')
-            self.menu.focus_set()
-            self.bind_keyframe_inputs(self.menu)
+            if self.menu != None:
+                # Unbind and hide main screen
+                self.unbind_main_inputs()
+                self.content.pack_forget()
+                
+                # Pack and bind the new menu
+                self.menu.pack(expand=True, fill='both')
+                self.menu.focus_set()
+                self.bind_keyframe_inputs(self.menu)
         
 
     # Set the main menu and display.
@@ -147,6 +148,8 @@ if __name__ == '__main__':
 
     taskwidget = tasks.Tasks(content)
 
+    # Clear config file so that write operation on exit will not cause
+    # duplicate sections to be present
     with open(CFG_LOC, 'w') as cfgfile:
         cfgfile.write('')
 
@@ -154,7 +157,7 @@ if __name__ == '__main__':
     content.add_widget(greetingwidget, 1, 3)
     content.add_widget(inweatherwidget, 1, 0)
     content.add_widget(battwidget, 3, 0)
-    content.add_widget(outweatherwidget, 2, 0)
+    content.add_widget(outweatherwidget, 3, 1)
     content.add_widget(taskwidget, 0, 1)
     content.add_widget(calendarwidget, 0, 2)
 

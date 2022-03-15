@@ -27,3 +27,6 @@ class Tasks(tk.Label):
 
 
         self.after(1000, self.update)
+
+    def get_settings_menu(self, _, exiting=False):
+        return None

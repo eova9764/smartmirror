@@ -56,23 +56,58 @@ class Keyframe(tk.Frame):
         moveflag = False
         
         if event.keysym == 'Up' and self.active_widget_loc['row'] > 0:
-            self.active_widget_loc['row'] -= self.nav['u']
-            moveflag = True
+            if self.nav['u']:
+                self.active_widget_loc['row'] = self.find_next_suitable_grid(event.keysym)
+                moveflag = True
         elif event.keysym == 'Down' and self.active_widget_loc['row'] < self.rows-1:
-            self.active_widget_loc['row'] += self.nav['d']
-            moveflag = True
+            if self.nav['d']:
+                self.active_widget_loc['row'] = self.find_next_suitable_grid(event.keysym)
+                moveflag = True
         elif event.keysym == 'Left' and self.active_widget_loc['col'] > 0:
-            self.active_widget_loc['col'] -= self.nav['l']
-            moveflag = True
+            if self.nav['l']:
+                self.active_widget_loc['col'] = self.find_next_suitable_grid(event.keysym)
+                moveflag = True
         elif event.keysym == 'Right' and self.active_widget_loc['col'] < self.columns-1:
-            self.active_widget_loc['col'] += self.nav['r']
-            moveflag = True
+            if self.nav['r']:
+                self.active_widget_loc['col'] = self.find_next_suitable_grid(event.keysym)
+                moveflag = True
 
         if moveflag:
             self.select_at(self.active_widget_loc['col'], self.active_widget_loc['row'])
 
         if DEBUG:
             print(f'{self.active_widget_loc["col"]}, {self.active_widget_loc["row"]}, {self.active_widget}')
+
+    # Find the next location that contains a widget in the direction specified,
+    # otherwise returns the current location
+    # Used to skip over empty spaces when navigation occurs
+    def find_next_suitable_grid(self, direction):
+        # Move up
+        if direction == 'Up':
+            for i in range(self.active_widget_loc['row']-1, -1, -1):
+                if self.widgets[self.active_widget_loc['col']][i] != None:
+                    return i
+            return self.active_widget_loc['row']
+        # Move down
+        elif direction == 'Down':
+            for i in range(self.active_widget_loc['row']+1, len(self.widgets)):
+                if self.widgets[self.active_widget_loc['col']][i] != None:
+                    return i
+            return self.active_widget_loc['row']
+        # Move left
+        elif direction == 'Left':
+            for i in range(self.active_widget_loc['col']-1, -1, -1):
+                if self.widgets[i][self.active_widget_loc['row']] != None:
+                    return i
+            return self.active_widget_loc['col']
+        # Move right
+        elif direction == 'Right':
+            for i in range(self.active_widget_loc['col']+1, len(self.widgets)):
+                if self.widgets[i][self.active_widget_loc['row']] != None:
+                    return i
+            return self.active_widget_loc['col']
+
+
 
     # Select the widget at the given coordinates
     def select_at(self, column, row):

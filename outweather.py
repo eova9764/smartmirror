@@ -62,3 +62,5 @@ class OutWeather(tk.Label):
         # Update every 10 minutes
         self.after(1000 * 60 * 10, self.update)
 
+    def get_settings_menu(self, _, exiting=False):
+        return None
