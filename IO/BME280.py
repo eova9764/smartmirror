@@ -10,8 +10,10 @@ def BME_Init():
     # Initialise the BME280
     bus = SMBus(1)
     bme280 = BME280(i2c_dev=bus)
-    sleep(2)
-    temperature = bme280.get_temperature()
-    pressure = bme280.get_pressure()
-    humidity = bme280.get_humidity()
+    try:
+        temperature = bme280.get_temperature()
+        pressure = bme280.get_pressure()
+        humidity = bme280.get_humidity()
+    except RuntimeError:
+        return None
     return bme280

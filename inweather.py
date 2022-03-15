@@ -36,16 +36,21 @@ class InWeather(tk.Label):
         self.update()
 
     def update(self):
-        temp_val = self.tempsens.get_temperature()
-        unit = 'C'
-        
-        if self.settings['unit'].get_value() == 'Farenheit':
-            temp_val = temp_val * (9/5) + 32
-            unit = 'F'
+        if self.tempsens:
+            temp_val = self.tempsens.get_temperature()
+            unit = 'C'
+            
+            if self.settings['unit'].get_value() == 'Farenheit':
+                temp_val = temp_val * (9/5) + 32
+                unit = 'F'
 
-        self.temp.config(text=f'{temp_val:5.1f} {unit}')
-        self.humid.config(text=f'{self.tempsens.get_humidity():5.1f} %rh')
-        self.press.config(text=f'{self.tempsens.get_pressure():5.1f} hPa')
+            self.temp.config(text=f'{temp_val:5.1f} {unit}')
+            self.humid.config(text=f'{self.tempsens.get_humidity():5.1f} %rh')
+            self.press.config(text=f'{self.tempsens.get_pressure():5.1f} hPa')
+        else:
+            self.temp.config(text=f'Could not')
+            self.humid.config(text=f'connect to')
+            self.press.config(text=f'sensor')
 
         self.after(1000, self.update)
 

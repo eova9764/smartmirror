@@ -52,7 +52,7 @@ class BatteryWidget(tk.Label):
 
     def update(self):
         # TODO: update with actual battery reading from Joey's IO module
-        batt_perc = 0
+        batt_perc = 98
         self.value.config(text=f'{batt_perc}%')
 
         if 100 >= batt_perc > 80:
