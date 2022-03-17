@@ -7,6 +7,7 @@ import inweather
 from keyframe import Keyframe
 import outweather
 import tasks
+from IO import MotSense
 
 import configparser
 import os
@@ -38,6 +39,7 @@ class MirrorUI(tk.Tk):
 
     # Only call from toggle_ui_hide: show previously hidden ui
     def _show_ui(self):
+        self.last_motion = 0
         self.blank.destroy()
         self.update()
         self.ui_visible = True
@@ -47,11 +49,12 @@ class MirrorUI(tk.Tk):
         if force_state == None:
             if self.ui_visible:
                 self._hide_ui()
+                self.last_motion = -self.motion_timeout
             else:
                 self._show_ui()
         elif force_state == 'show' and not self.ui_visible:
             self._show_ui()
-        elif force_state == 'hide' and self.visible:
+        elif force_state == 'hide' and self.ui_visible:
             self._hide_ui()
 
     def __init__(self, *args, **kwargs):
@@ -68,6 +71,28 @@ class MirrorUI(tk.Tk):
 
         self.ui_visible = True
         self.bind('<n>', lambda _:self.toggle_ui_hide(None))
+
+        self.motion_timeout = 10000 # 10 seconds
+        self.last_motion = self.motion_timeout
+        self.check_motion()
+
+    # Polls the motion sensor to see if we need to sleep/wake
+    def check_motion(self):
+        timer_period = 250 # every 250 ms
+        
+        # Get motion state
+        if MotSense.get() and self.last_motion >= 0:
+            self.last_motion = 0
+        else:
+            self.last_motion += timer_period
+        
+        # Hide/show window based on current and previous states
+        if self.last_motion >= self.motion_timeout:
+            self.toggle_ui_hide(force_state='hide')
+        elif self.last_motion >= 0:
+            self.toggle_ui_hide(force_state='show')
+
+        self.after(timer_period, self.check_motion)
 
     # Bind all of the keys that the keyframe passed in needs
     def bind_keyframe_inputs(self, keyframe):
