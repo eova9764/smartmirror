@@ -28,19 +28,31 @@ def close_cleanup():
 
 class MirrorUI(tk.Tk):
 
+    # Only call from toggle_ui_hide: hides the ui
+    def _hide_ui(self):
+        self.blank = tk.Frame(self)
+        self.blank.config(bg=BGCOL)
+        self.blank.place(x=0, y=0, width=self.winfo_screenwidth(), height=self.winfo_screenheight())
+        self.blank.tkraise()
+        self.ui_visible = False
+
+    # Only call from toggle_ui_hide: show previously hidden ui
+    def _show_ui(self):
+        self.blank.destroy()
+        self.update()
+        self.ui_visible = True
+        
     # Called when sleep button is pressed to hide/show the ui
-    def toggle_ui_hide(self, _):
-        if self.ui_visible:
-            self.blank = tk.Frame(self)
-            self.blank.config(bg=BGCOL)
-            self.blank.place(x=0, y=0, width=self.winfo_screenwidth(), height=self.winfo_screenheight())
-            self.blank.tkraise()
-            self.ui_visible = False
-        else:
-            self.blank.destroy()
-            self.update()
-            self.ui_visible = True
-            print('was false now true')
+    def toggle_ui_hide(self, force_state=None, _=None):
+        if force_state == None:
+            if self.ui_visible:
+                self._hide_ui()
+            else:
+                self._show_ui()
+        elif force_state == 'show' and not self.ui_visible:
+            self._show_ui()
+        elif force_state == 'hide' and self.visible:
+            self._hide_ui()
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -55,7 +67,7 @@ class MirrorUI(tk.Tk):
         self.menu = None
 
         self.ui_visible = True
-        self.bind('<n>', self.toggle_ui_hide)
+        self.bind('<n>', lambda _:self.toggle_ui_hide(None))
 
     # Bind all of the keys that the keyframe passed in needs
     def bind_keyframe_inputs(self, keyframe):
