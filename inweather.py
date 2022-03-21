@@ -37,16 +37,20 @@ class InWeather(tk.Label):
 
     def update(self):
         if self.tempsens:
-            temp_val = self.tempsens.get_temperature()
+            raw_temp_val = self.tempsens.get_temperature()
+            humidity = self.tempsens.get_humidity()
+            pressure = self.tempsens.get_pressure()
             unit = 'C'
             
             if self.settings['unit'].get_value() == 'Farenheit':
-                temp_val = temp_val * (9/5) + 32
+                temp_val = raw_temp_val * (9/5) + 32
                 unit = 'F'
 
             self.temp.config(text=f'{temp_val:5.1f} {unit}')
-            self.humid.config(text=f'{self.tempsens.get_humidity():5.1f} %rh')
-            self.press.config(text=f'{self.tempsens.get_pressure():5.1f} hPa')
+            self.humid.config(text=f'{humidity:5.1f} %rh')
+            self.press.config(text=f'{pressure:5.1f} hPa')
+            with open('inweather.csv', 'w') as wf:
+                wf.write(f'{raw_temp_val:5.1f},{humidity:5.1f},{pressure:5.1f}')
         else:
             self.temp.config(text=f'Could not')
             self.humid.config(text=f'connect to')

@@ -1,4 +1,5 @@
 import datetime
+import os
 import tkinter as tk
 import zoneinfo
 
@@ -22,6 +23,17 @@ class GreetingWidget(tk.Label):
         self.update()
 
     def update(self):
+        if not os.path.exists('username.txt'):
+            with open('username.txt', 'w') as wf:
+                wf.write('')
+                username = None
+        else:
+            with open('username.txt', 'r') as rf:
+                try:
+                    username = rf.readlines()[0]
+                except IndexError:
+                    username = None
+
         hour = int(datetime.datetime.now(tz=zoneinfo.ZoneInfo(self.settings['tz'].get_value())).strftime('%H'))
         if 5 <= hour < 12:
             time_of_day = 'morning'
@@ -32,9 +44,13 @@ class GreetingWidget(tk.Label):
         else:
             time_of_day = 'night'
 
-        self.config(text=f'Good {time_of_day}')
-        ## Update every 5 minutes
-        self.after(5 * 60 * 1000, self.update)
+        if username:
+            self.config(text=f'Good {time_of_day}, {username}')
+        else:
+            self.config(text=f'Good {time_of_day}')
+
+        ## Update every second
+        self.after(1000, self.update)
 
     def get_settings_menu(self, _):
         return None

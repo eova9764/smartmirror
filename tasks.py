@@ -11,6 +11,10 @@ class Tasks(tk.Label):
         self.config(bg=BGCOL, fg=FGCOL, font=FONT)
         self.config(highlightbackground=BGCOL, highlightcolor=BGCOL, highlightthickness=BRDRWID)
 
+        self.label = tk.Label(self, text='TODO')
+        self.label.config(bg=BGCOL, fg=FGCOL, font=FONT_M)
+        self.label.pack()
+
         self.tasks_text = tk.Label(self)
         self.tasks_text.config(bg=BGCOL, fg=FGCOL, font=FONT_SM)
         self.tasks_text.pack()

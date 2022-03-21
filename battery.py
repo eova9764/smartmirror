@@ -11,6 +11,7 @@ class BatteryWidget(tk.Label):
         super().__init__(*args, **kwargs)
 
         self.settings = {}
+        self.batt_perc = 100
         
         self.config(highlightbackground=BGCOL, highlightcolor=BGCOL, highlightthickness=BRDRWID)
 
@@ -52,25 +53,25 @@ class BatteryWidget(tk.Label):
 
     def update(self):
         # TODO: update with actual battery reading from Joey's IO module
-        batt_perc = 98
-        self.value.config(text=f'{batt_perc}%')
+        self.batt_perc -= 1
+        self.value.config(text=f'{self.batt_perc}%')
 
-        if 100 >= batt_perc > 80:
+        if 100 >= self.batt_perc > 80:
             self.image.config(image=self.batt_full_tk)
-        elif 80 >= batt_perc > 60:
+        elif 80 >= self.batt_perc > 60:
             self.image.config(image=self.batt_80_tk)
-        elif 60 >= batt_perc > 40:
+        elif 60 >= self.batt_perc > 40:
             self.image.config(image=self.batt_60_tk)
-        elif 40 >= batt_perc > 20:
+        elif 40 >= self.batt_perc > 20:
             self.image.config(image=self.batt_40_tk)
-        elif 20 >= batt_perc >= 0:
+        elif 20 >= self.batt_perc >= 0:
             self.image.config(image=self.batt_20_tk)
-        elif batt_perc == 'charging':
+        elif self.batt_perc == 'charging':
             self.image.config(image=self.batt_chrg_tk)
 
 
-        # Update every 1 minute
-        self.after(1000 * 60, self.update)
+        # Update every second
+        self.after(1000, self.update)
 
     def get_settings_menu(self, _):
         return None

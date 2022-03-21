@@ -19,6 +19,10 @@ class Calendar(tk.Label):
         self.settings = {'tz':Setting('Time zone', tzs,
                 current_val=cfg['time zone'] if cfg else 'US/Michigan')}
         
+        self.label = tk.Label(self, text='Today\'s calendar')
+        self.label.config(bg=BGCOL, fg=FGCOL, font=FONT_M)
+        self.label.pack()
+
         self.event_text = tk.Label(self)
         self.event_text.config(bg=BGCOL, fg=FGCOL, font=FONT_SM)
         self.event_text.pack()

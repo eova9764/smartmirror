@@ -23,8 +23,10 @@ def close_cleanup():
 
     # Open each menu with the exiting flag set to true to force them to write
     # out their current configs
+    print('Starting safe exit procedure...')
     mui.open_menu(clockwidget.get_settings_menu(mui, exiting=True))
     mui.open_menu(inweatherwidget.get_settings_menu(mui, exiting=True))
+    print('Done')
     exit()
 
 class MirrorUI(tk.Tk):
@@ -78,7 +80,7 @@ class MirrorUI(tk.Tk):
 
     # Polls the motion sensor to see if we need to sleep/wake
     def check_motion(self):
-        timer_period = 250 # every 250 ms
+        timer_period = 100 # every 250 ms
         
         # Get motion state
         if MotSense.get() and self.last_motion >= 0:
