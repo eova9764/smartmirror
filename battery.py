@@ -10,7 +10,7 @@ class BatteryWidget(tk.Label):
     def __init__(self, *args, cfg=None, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self.settings = {}
+        self.settings = {'sim_batt':Setting('Simulated discharge', ['On', 'Off'], current_val='Off')}
         self.batt_perc = 100
         
         self.config(highlightbackground=BGCOL, highlightcolor=BGCOL, highlightthickness=BRDRWID)
@@ -53,7 +53,8 @@ class BatteryWidget(tk.Label):
 
     def update(self):
         # TODO: update with actual battery reading from Joey's IO module
-        self.batt_perc -= 1
+        if self.batt_perc > 0 and self.settings['sim_batt'].get_value() == 'On':
+            self.batt_perc -= 1
         self.value.config(text=f'{self.batt_perc}%')
 
         if 100 >= self.batt_perc > 80:
@@ -69,9 +70,18 @@ class BatteryWidget(tk.Label):
         elif self.batt_perc == 'charging':
             self.image.config(image=self.batt_chrg_tk)
 
+        if self.batt_perc <= 20:
+            self.quit()
+
 
         # Update every second
         self.after(1000, self.update)
 
-    def get_settings_menu(self, _):
-        return None
+    def get_settings_menu(self, root, exiting=False):
+        return ConfigMenu(root, self, exiting, title='Battery Settings')
+
+    def get_settings(self):
+        return self.settings
+    
+    def set_settings(self, new_settings):
+        self.settings = new_settings
