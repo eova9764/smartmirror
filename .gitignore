@@ -4,3 +4,5 @@ cfg.ini
 calendar.txt
 tasks.txt
 IO/main.py
+inweather.csv
+username.txt

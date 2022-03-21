@@ -65,7 +65,7 @@ class ConfigMenu(Keyframe):
         # Update settings
         for item in self.settings_widgets:
             self.settings[item].set_value(self.settings_widgets[item].get_value())
-            cfg[self.titlestr][self.settings[item].get_name()] = self.settings_widgets[item].get_value()
+            cfg[self.titlestr][self.settings[item].get_name()] = str(self.settings_widgets[item].get_value())
 
         # When simply closing the menu, exit function is called from tkinter,
         # which passes in an event object. There is no need to write to the

@@ -5,14 +5,17 @@ from consts import *
 import greeting
 import inweather
 from keyframe import Keyframe
+import lights
 import outweather
 import tasks
 from IO import MotSense
+from IO import NeoPixels as led
 
 import configparser
 import os
 import signal
 import sys
+import threading
 import tkinter as tk
 
 COLS = 4
@@ -20,12 +23,13 @@ ROWS = 4
 
 def close_cleanup():
 
-
     # Open each menu with the exiting flag set to true to force them to write
-    # out their current configs
+    # out their current config
     print('Starting safe exit procedure...')
     mui.open_menu(clockwidget.get_settings_menu(mui, exiting=True))
     mui.open_menu(inweatherwidget.get_settings_menu(mui, exiting=True))
+    global strip
+    led.colorWipe(strip, [0, 0, 0], 10)
     print('Done')
     exit()
 
@@ -37,6 +41,9 @@ class MirrorUI(tk.Tk):
         self.blank.config(bg=BGCOL)
         self.blank.place(x=0, y=0, width=self.winfo_screenwidth(), height=self.winfo_screenheight())
         self.blank.tkraise()
+        global strip
+        ledthread = threading.Thread(target=led.colorWipe, args=[strip, [0,0,0], 10])
+        ledthread.start()
         self.ui_visible = False
 
     # Only call from toggle_ui_hide: show previously hidden ui
@@ -44,6 +51,9 @@ class MirrorUI(tk.Tk):
         self.last_motion = 0
         self.blank.destroy()
         self.update()
+        global lightswidget
+        ledthread = threading.Thread(target=lightswidget.update)
+        ledthread.start()
         self.ui_visible = True
         
     # Called when sleep button is pressed to hide/show the ui
@@ -154,6 +164,7 @@ def sigint_handler(signal, frame):
 
 if __name__ == '__main__':
     signal.signal(signal.SIGINT, sigint_handler)
+    strip = led.setup()
 
     mui = MirrorUI()
 
@@ -183,9 +194,18 @@ if __name__ == '__main__':
         outweatherwidget = outweather.OutWeather(content)
 
     # Battery widget
-    battwidget = battery.BatteryWidget(content)
+    if cfg and 'Battery setttings' in cfg:
+        battwidget = battery.BatteryWidget(content, cfg=cfg['Battery setttings'])
+    else:
+        battwidget = battery.BatteryWidget(content)
+
+    # Lights widget
+    global lightswidget
+    lightswidget = lights.LightsWidget(content)
+    lightswidget.set_strip(strip)
 
     taskwidget = tasks.Tasks(content)
+
 
     # Clear config file so that write operation on exit will not cause
     # duplicate sections to be present
@@ -196,9 +216,10 @@ if __name__ == '__main__':
     content.add_widget(greetingwidget, 1, 3)
     content.add_widget(inweatherwidget, 1, 0)
     content.add_widget(battwidget, 3, 0)
-    content.add_widget(outweatherwidget, 3, 1)
+    content.add_widget(outweatherwidget, 2, 0)
     content.add_widget(taskwidget, 0, 1)
     content.add_widget(calendarwidget, 0, 2)
+    content.add_widget(lightswidget, 0, 3)
 
 
     # Setup keyboard input
