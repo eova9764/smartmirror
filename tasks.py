@@ -47,12 +47,12 @@ class Tasks(tk.Label):
         deltasks = []
         for task in self.settings:
             if self.settings[task].get_value() == 'Done':
-                taskstr += f'✓ {task}\n'
+                taskstr += f'✓ {task}'
             elif self.settings[task].get_value() == 'Remove':
                 delflag = True
                 deltasks.append(self.settings[task])
             else:
-                taskstr += f'{task}\n'
+                taskstr += f'{task}'
 
         # Remove tasks from settings after iteration is complete so size doesn't change during
         for task in deltasks:

@@ -73,7 +73,7 @@ class MirrorUI(tk.Tk):
         super().__init__(*args, **kwargs)
 
         # Set fullscreen, hide mouse cursor, set exit method
-        #self.attributes('-fullscreen', True)
+        self.attributes('-fullscreen', True)
         self.configure(bg=BGCOL, cursor='none')
         self.wait_visibility(self)
         self.protocol("WM_DELETE_WINDOW", close_cleanup)

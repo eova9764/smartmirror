@@ -11,8 +11,8 @@ class InWeather(tk.Label):
         super().__init__(*args, **kwargs)
 
         self.settings = {
-                'unit':Setting('Unit', ['Farenheit', 'Celcius'],
-                        current_val=cfg['unit'] if cfg else 'Farenheit')
+                'unit':Setting('Unit', ['Fahrenheit', 'Celcius'],
+                        current_val=cfg['unit'] if cfg else 'Fahrenheit')
         }
         
         self.bgimg = tk.PhotoImage(file='img/indoor-sm.png')

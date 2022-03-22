@@ -13,8 +13,8 @@ class OutWeather(tk.Label):
         super().__init__(*args, **kwargs)
 
         self.settings = {
-                'unit':Setting('Unit', ['Farenheit', 'Celcius'],
-                        current_val=cfg['unit'] if cfg else 'Farenheit')
+                'unit':Setting('Unit', ['Fahrenheit', 'Celcius'],
+                        current_val=cfg['unit'] if cfg else 'Fahrenheit')
         }
 
         self.config(highlightbackground=BGCOL, highlightcolor=BGCOL, highlightthickness=BRDRWID)
@@ -75,7 +75,7 @@ class OutWeather(tk.Label):
 
         # Update text and icon
         self.icon.config(image=self.icons[percip])
-        self.temp.config(text=f'{temp:.1f} °F' if self.settings['unit'].get_value() == 'Farenheit' else '{temp:.1f} C')
+        self.temp.config(text=f'{temp:.1f} °F' if self.settings['unit'].get_value() == 'Fahrenheit' else f'{temp:.1f} C')
 
         # Update every 10 minutes
         self.after(1000 * 60 * 10, self.update)
