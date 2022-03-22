@@ -52,8 +52,8 @@ class OutWeather(tk.Label):
 
     def update(self):
         # TODO: update with actual values from Stephen's app
-        temp = 54
-        percip = 'snow'
+        temp = 41
+        percip = 'rain'
 
         # Update text and icon
         self.icon.config(image=self.icons[percip])

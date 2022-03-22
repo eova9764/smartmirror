@@ -219,10 +219,10 @@ if __name__ == '__main__':
         cfgfile.write('')
 
     content.add_widget(clockwidget, 0, 0)
-    content.add_widget(greetingwidget, 1, 3)
-    content.add_widget(inweatherwidget, 1, 0)
+    content.add_widget(greetingwidget, 1, 3, wide=True)
+    content.add_widget(inweatherwidget, 2, 0)
     content.add_widget(battwidget, 3, 0)
-    content.add_widget(outweatherwidget, 2, 0)
+    content.add_widget(outweatherwidget, 1, 0)
     content.add_widget(taskwidget, 0, 1)
     content.add_widget(calendarwidget, 0, 2)
     content.add_widget(lightswidget, 0, 3)

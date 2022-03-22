@@ -40,11 +40,13 @@ class InWeather(tk.Label):
             raw_temp_val = self.tempsens.get_temperature()
             humidity = self.tempsens.get_humidity()
             pressure = self.tempsens.get_pressure()
-            unit = 'C'
             
-            if self.settings['unit'].get_value() == 'Farenheit':
+            if self.settings['unit'].get_value() == 'Fahrenheit':
                 temp_val = raw_temp_val * (9/5) + 32
                 unit = 'F'
+            else:
+                temp_val = raw_temp_val
+                unit = 'C'
 
             self.temp.config(text=f'{temp_val:5.1f} {unit}')
             self.humid.config(text=f'{humidity:5.1f} %rh')

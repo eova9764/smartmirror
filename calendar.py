@@ -37,6 +37,7 @@ class Calendar(tk.Label):
 
         with open('calendar.txt') as calfile:
             lines = calfile.readlines()
+            lines.sort()
 
         hour = int(datetime.datetime.now(tz=zoneinfo.ZoneInfo(self.settings['tz'].get_value())).strftime('%H'))
         minute = int(datetime.datetime.now(tz=zoneinfo.ZoneInfo(self.settings['tz'].get_value())).strftime('%M'))

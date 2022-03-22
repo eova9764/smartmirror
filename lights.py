@@ -15,7 +15,7 @@ class LightsWidget(tk.Label):
         col_rng = list(range(256))
         col_rng.reverse()
         self.settings = {
-                'on': Setting('LED power', ['On', 'Rainbow', 'Off'], current_val=cfg['led power'] if cfg else 'On'),
+                'on': Setting('LED power', ['On', 'Rainbow', 'Random', 'Off'], current_val=cfg['led power'] if cfg else 'Rainbow'),
                 'r': Setting('Red', col_rng, current_val_idx=255-int(cfg['red']) if cfg else 70),
                 'g': Setting('Green', col_rng, current_val_idx=255-int(cfg['green']) if cfg else 240),
                 'b': Setting('Blue', col_rng, current_val_idx=255-int(cfg['blue']) if cfg else 120)
@@ -36,6 +36,11 @@ class LightsWidget(tk.Label):
         g = self.settings['g'].get_value()
         b = self.settings['b'].get_value()
         return [r,g,b]
+    
+    def toRGB(self):
+        retval = f'#{self.settings["r"].get_value():02x}{self.settings["g"].get_value():02x}{self.settings["b"].get_value():02x}'
+        print(retval)
+        return retval
 
     def set_strip(self, strip):
         self.strip = strip
@@ -44,13 +49,18 @@ class LightsWidget(tk.Label):
     def update(self):
         if self.strip:
             if self.settings['on'].get_value() == 'On':
-
                 ledthread = threading.Thread(target=led.colorWipe, args=[self.strip, self.current_colors(), 10])
+                self.label.config(fg=self.toRGB())
             elif self.settings['on'].get_value() == 'Rainbow':
                 ledthread = threading.Thread(target=led.rainbowCycle, args=[self.strip, 10, 0])
+                self.label.config(fg='white')
+            elif self.settings['on'].get_value() == 'Random':
+                ledthread = threading.Thread(target=led.randomCol, args=[self.strip, 10])
+                self.label.config(fg='white')
             else:
                 ledthread = threading.Thread(target=led.colorWipe, args=[self.strip, [0, 0, 0], 10])
-
+                self.label.config(fg='#7f7f7f')
+        
             ledthread.start()
 
     def get_settings_menu(self, root, exiting=False):

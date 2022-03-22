@@ -134,7 +134,7 @@ class Keyframe(tk.Frame):
             else:
                 widget.config(highlightbackground=BGCOL, highlightcolor=BGCOL, highlightthickness=BRDRWID)
 
-    def add_widget(self, widget, column, row):
+    def add_widget(self, widget, column, row, wide=False):
         if DEBUG:
             print(f'<add_widget> Adding widget {widget} at {column}, {row}\n{self.widgets}\n\n')
         # Do not overwrite an existing widget
@@ -142,7 +142,7 @@ class Keyframe(tk.Frame):
             print('Widget already exists there')
         else:
             self.widgets[column][row] = widget
-            widget.grid(row=row, column=column)
+            widget.grid(row=row, column=column, columnspan=2 if wide else 1)
             self.widget_count += 1
 
         if self.widget_count == 1:
