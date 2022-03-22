@@ -21,15 +21,15 @@ class InWeather(tk.Label):
 
         self.temp = tk.Label(self)
         self.temp.config(bg=BGCOL, fg=FGCOL, font=FONT_SM)
-        self.temp.place(relx=.35, rely=.3)
+        self.temp.place(relx=.30, rely=.40)
 
         self.humid = tk.Label(self)
         self.humid.config(bg=BGCOL, fg=FGCOL, font=FONT_SM)
-        self.humid.place(relx=.35, rely=.5)
+        self.humid.place(relx=.30, rely=.60)
 
         self.press = tk.Label(self)
         self.press.config(bg=BGCOL, fg=FGCOL, font=FONT_SM)
-        self.press.place(relx=.20, rely=.7)
+        self.press.place(relx=.30, rely=.80)
 
         self.tempsens = BME280.BME_Init()
 

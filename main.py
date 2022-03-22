@@ -1,5 +1,5 @@
 import battery
-import calendar
+import cal
 import clock
 from consts import *
 import greeting
@@ -183,11 +183,11 @@ if __name__ == '__main__':
     if cfg and 'Clock Settings' in cfg:
         clockwidget = clock.ClockWidget(content, cfg=cfg['Clock Settings'])
         greetingwidget = greeting.GreetingWidget(content, cfg=cfg['Clock Settings'])
-        calendarwidget = calendar.Calendar(content, cfg=cfg['Clock Settings'])
+        calendarwidget = cal.Calendar(content, cfg=cfg['Clock Settings'])
     else:
         clockwidget = clock.ClockWidget(content)
         greetingwidget = greeting.GreetingWidget(content)
-        calendarwidget = calendar.Calendar(content)
+        calendarwidget = cal.Calendar(content)
 
     # Weather widgets
     if cfg and 'Weather settings' in cfg:

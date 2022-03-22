@@ -1,5 +1,7 @@
+import json
 import tkinter as tk
 from PIL import ImageTk, Image
+import requests
 
 from configmenu import ConfigMenu
 from consts import *
@@ -32,10 +34,10 @@ class OutWeather(tk.Label):
         self.icons = {}
         for item in self.icon_locs:
             img = icons_img.crop([
-                width/5 * self.icon_locs[item][0],
-                height/4 * self.icon_locs[item][1],
-                width/5 * (self.icon_locs[item][0]+1),
-                height/4 * (self.icon_locs[item][1]+1)
+                width/5 * self.icon_locs[item][0] +20,
+                height/4 * self.icon_locs[item][1] +20,
+                width/5 * (self.icon_locs[item][0]+1) +20,
+                height/4 * (self.icon_locs[item][1]+1) +20
             ])
             self.icons[item] = ImageTk.PhotoImage(img)
         
@@ -51,13 +53,29 @@ class OutWeather(tk.Label):
         self.update()
 
     def update(self):
+        with open('wapi-key.txt', 'r') as wf:
+            api_key = wf.readlines()[0][:-1]
+
+        base_url = 'http://api.openweathermap.org/data/2.5/weather?'
+        city_name = 'Flint'
+        complete_url = base_url + "appid=" + api_key + "&q=" + city_name
+        response = requests.get(complete_url)
+        jsonres = response.json()
+
+        # Get temperature from openweatherapi
+        if jsonres["cod"] != "404":
+            temp_raw = jsonres["main"]["temp"]
+            print(jsonres['weather'][0]['description'])
+
+
         # TODO: update with actual values from Stephen's app
-        temp = 41
-        percip = 'rain'
+        temp = temp_raw - 273.15
+        temp = temp * (9/5) + 32
+        percip = 'partly cloudy'
 
         # Update text and icon
         self.icon.config(image=self.icons[percip])
-        self.temp.config(text=f'{temp} °F' if self.settings['unit'].get_value() == 'Farenheit' else '12.2 °C')
+        self.temp.config(text=f'{temp:.1f} °F' if self.settings['unit'].get_value() == 'Farenheit' else '{temp:.1f} C')
 
         # Update every 10 minutes
         self.after(1000 * 60 * 10, self.update)
