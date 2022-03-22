@@ -39,14 +39,19 @@ class Calendar(tk.Label):
             lines = calfile.readlines()
             lines.sort()
 
+        year = int(datetime.datetime.now(tz=zoneinfo.ZoneInfo(self.settings['tz'].get_value())).strftime('%Y'))
+        month = int(datetime.datetime.now(tz=zoneinfo.ZoneInfo(self.settings['tz'].get_value())).strftime('%m'))
+        day = int(datetime.datetime.now(tz=zoneinfo.ZoneInfo(self.settings['tz'].get_value())).strftime('%d'))
         hour = int(datetime.datetime.now(tz=zoneinfo.ZoneInfo(self.settings['tz'].get_value())).strftime('%H'))
         minute = int(datetime.datetime.now(tz=zoneinfo.ZoneInfo(self.settings['tz'].get_value())).strftime('%M'))
 
+
         for line in lines:
-            result = re.search(r'(\d{1,2}):(\d{2})-(\d{1,2}):(\d{2}) (.*)', line)
-            if int(result.group(1)) > hour:
-                if result.string not in self.events:
-                    self.events.append(result.string)
+            result = re.search(r'(\d{4})-(\d{1,2})-(\d{1,2})T(\d{1,2}):(\d{2})-(\d{1,2}):(\d{2}) (.*)', line)
+            if int(result.group(1)) == year and int(result.group(2)) == month and int(result.group(3)) == day and int(result.group(4)) >= hour:
+                event_str = f'{int(result.group(4)):02.0f}:{int(result.group(5)):02.0f}-{int(result.group(6)):02.0f}:{int(result.group(7)):02.0f} {result.group(8)}'
+                if event_str not in self.events:
+                    self.events.append(event_str)
 
         self.event_text.config(text='\n'.join(self.events))
         
