@@ -8,6 +8,7 @@ from keyframe import Keyframe
 import lights
 import outweather
 import tasks
+from IO import blue
 from IO import MotSense
 from IO import NeoPixels as led
 
@@ -17,8 +18,6 @@ import signal
 import sys
 import threading
 import tkinter as tk
-
-import traceback
 
 COLS = 4
 ROWS = 4
@@ -30,7 +29,8 @@ def close_cleanup():
     print('Starting safe exit procedure...')
     mui.open_menu(clockwidget.get_settings_menu(mui, exiting=True))
     mui.open_menu(inweatherwidget.get_settings_menu(mui, exiting=True))
-    global strip
+    mui.open_menu(battwidget.get_settings_menu(mui, exiting=True))
+    mui.open_menu(lightswidget.get_settings_menu(mui, exiting=True))
     led.colorWipe(strip, [0, 0, 0], 10)
     print('Done')
     exit()
@@ -43,18 +43,15 @@ class MirrorUI(tk.Tk):
         self.blank.config(bg=BGCOL)
         self.blank.place(x=0, y=0, width=self.winfo_screenwidth(), height=self.winfo_screenheight())
         self.blank.tkraise()
-        global strip
         ledthread = threading.Thread(target=led.colorWipe, args=[strip, [0,0,0], 10])
         ledthread.start()
         self.ui_visible = False
 
     # Only call from toggle_ui_hide: show previously hidden ui
     def _show_ui(self):
-        traceback.print_stack()
         self.last_motion = 0
         self.blank.destroy()
         self.update()
-        global lightswidget
         ledthread = threading.Thread(target=lightswidget.update)
         ledthread.start()
         self.ui_visible = True
@@ -64,7 +61,7 @@ class MirrorUI(tk.Tk):
         if force_state == None:
             if self.ui_visible:
                 self._hide_ui()
-                self.last_motion = -self.motion_timeout
+                self.last_motion = -self.auto_sleep_timeout
             else:
                 self._show_ui()
         elif force_state == 'show' and not self.ui_visible:
@@ -76,7 +73,7 @@ class MirrorUI(tk.Tk):
         super().__init__(*args, **kwargs)
 
         # Set fullscreen, hide mouse cursor, set exit method
-        self.attributes('-fullscreen', True)
+        #self.attributes('-fullscreen', True)
         self.configure(bg=BGCOL, cursor='none')
         self.wait_visibility(self)
         self.protocol("WM_DELETE_WINDOW", close_cleanup)
@@ -87,7 +84,8 @@ class MirrorUI(tk.Tk):
         self.ui_visible = True
         self.bind('<n>', lambda _:self.toggle_ui_hide(None))
 
-        self.motion_timeout = 10000 # 10 seconds
+        self.motion_timeout = 60000 # 60 seconds
+        self.auto_sleep_timeout = 10000 # 10 seconds
         self.last_motion = 0
         self.check_motion()
 
@@ -200,14 +198,16 @@ if __name__ == '__main__':
         outweatherwidget = outweather.OutWeather(content)
 
     # Battery widget
-    if cfg and 'Battery setttings' in cfg:
-        battwidget = battery.BatteryWidget(content, cfg=cfg['Battery setttings'])
+    if cfg and 'Battery settings' in cfg:
+        battwidget = battery.BatteryWidget(content, cfg=cfg['Battery settings'])
     else:
         battwidget = battery.BatteryWidget(content)
 
     # Lights widget
-    global lightswidget
-    lightswidget = lights.LightsWidget(content)
+    if cfg and 'LED settings' in cfg:
+        lightswidget = lights.LightsWidget(content, cfg=cfg['LED settings'])
+    else:
+        lightswidget = lights.LightsWidget(content)
     lightswidget.set_strip(strip)
 
     taskwidget = tasks.Tasks(content)
@@ -231,6 +231,11 @@ if __name__ == '__main__':
     # Setup keyboard input
     content.set_nav_axes('vh')
     content.add_bind('<Return>', mui.open_menu)
+
+    # Setup bluetooth
+    port, server_sock = blue.setup_bluetooth()
+    bluethread = threading.Thread(target=blue.bluetooth_loop, args=[port, server_sock], daemon=True)
+    bluethread.start()
 
     mui.set_main_contents(content)
 

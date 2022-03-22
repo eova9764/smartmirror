@@ -10,7 +10,7 @@ class BatteryWidget(tk.Label):
     def __init__(self, *args, cfg=None, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self.settings = {'sim_batt':Setting('Simulated discharge', ['On', 'Off'], current_val='Off')}
+        self.settings = {'sim_batt':Setting('Simulated discharge', ['On', 'Off'], current_val=cfg['simulated discharge'] if cfg else 'Off')}
         self.batt_perc = 100
         
         self.config(highlightbackground=BGCOL, highlightcolor=BGCOL, highlightthickness=BRDRWID)
@@ -78,7 +78,7 @@ class BatteryWidget(tk.Label):
         self.after(1000, self.update)
 
     def get_settings_menu(self, root, exiting=False):
-        return ConfigMenu(root, self, exiting, title='Battery Settings')
+        return ConfigMenu(root, self, exiting, title='Battery settings')
 
     def get_settings(self):
         return self.settings

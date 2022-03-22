@@ -26,17 +26,18 @@ def setup_bluetooth():
 def get_path(filename):
     return os.path.normpath(os.path.join(os.path.dirname(__file__), '..', filename))
 
+def recv_and_format(socket):
+    recvd = socket.recv(1024).decode()
+    recvd = recvd.replace('\n', '')
+    recvd = recvd.replace('\r', '')
+    return recvd
+
 def bluetooth_loop(bluetooth_port, server_socket):
     # Acquire connection
     print(f'Waiting for connection from RFCOMM channel {bluetooth_port}')
     client_sock, client_info = server_socket.accept()
     print(f'Accepted connection from {client_info}')
 
-    def recv_and_format(socket):
-        recvd = socket.recv(1024).decode()
-        recvd = recvd.replace('\n', '')
-        recvd = recvd.replace('\r', '')
-        return recvd
 
     # Receive data
     while True:
@@ -89,6 +90,7 @@ def bluetooth_loop(bluetooth_port, server_socket):
             print('Disconnected')
             client_sock.close()
             exit()
+    print('Bluetooth disconnected')
 
 if __name__ == '__main__':
     bt_port, ssock = setup_bluetooth()

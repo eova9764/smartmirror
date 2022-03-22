@@ -15,10 +15,10 @@ class LightsWidget(tk.Label):
         col_rng = list(range(256))
         col_rng.reverse()
         self.settings = {
-                'on': Setting('LED power', ['On', 'Rainbow', 'Off'], 'On'),
-                'r': Setting('Red', col_rng, current_val=70),
-                'g': Setting('Green', col_rng, current_val=240),
-                'b': Setting('Blue', col_rng, current_val=120)
+                'on': Setting('LED power', ['On', 'Rainbow', 'Off'], current_val=cfg['led power'] if cfg else 'On'),
+                'r': Setting('Red', col_rng, current_val_idx=255-int(cfg['red']) if cfg else 70),
+                'g': Setting('Green', col_rng, current_val_idx=255-int(cfg['green']) if cfg else 240),
+                'b': Setting('Blue', col_rng, current_val_idx=255-int(cfg['blue']) if cfg else 120)
         }
 
         self.config(bg=BGCOL, fg=FGCOL, highlightcolor=BGCOL, highlightthickness=BRDRWID)
