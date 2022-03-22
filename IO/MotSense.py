@@ -5,12 +5,6 @@ import subprocess
 
 sensePin = 4
 
-ds = 0
-timeout = 10
-timer = timeout
-once = False
-once2 = False
-
 gpio.setmode(gpio.BCM)
 gpio.setup(sensePin, gpio.IN)
 
@@ -19,20 +13,5 @@ def get():
 
 if __name__ == '__main__':
     while True:
-        sleep(1)
-        ds = 0
-        motion = 1-gpio.input(sensePin)
-        if motion == 1:
-            once2 = False
-            timer = 0
-            if once == False:
-                once = True
-                print("Wake")
-        else:
-            if timer >= timeout:
-                if once2 == False:
-                    once2 = True
-                    once = False
-                    print("Sleep")
-            else:
-                timer = timer + 1
+        sleep(0.1)
+        print(gpio.input(sensePin)==0)

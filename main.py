@@ -18,6 +18,8 @@ import sys
 import threading
 import tkinter as tk
 
+import traceback
+
 COLS = 4
 ROWS = 4
 
@@ -48,6 +50,7 @@ class MirrorUI(tk.Tk):
 
     # Only call from toggle_ui_hide: show previously hidden ui
     def _show_ui(self):
+        traceback.print_stack()
         self.last_motion = 0
         self.blank.destroy()
         self.update()
@@ -85,7 +88,7 @@ class MirrorUI(tk.Tk):
         self.bind('<n>', lambda _:self.toggle_ui_hide(None))
 
         self.motion_timeout = 10000 # 10 seconds
-        self.last_motion = self.motion_timeout
+        self.last_motion = 0
         self.check_motion()
 
     # Polls the motion sensor to see if we need to sleep/wake
@@ -95,14 +98,17 @@ class MirrorUI(tk.Tk):
         # Get motion state
         if MotSense.get() and self.last_motion >= 0:
             self.last_motion = 0
+            self.toggle_ui_hide(force_state='show')
         else:
             self.last_motion += timer_period
+        if self.last_motion % 1000 == 0:
+            print(f'Auto sleep in {self.motion_timeout / 1000 - self.last_motion / 1000} seconds, current timer value: {self.last_motion}')
         
         # Hide/show window based on current and previous states
         if self.last_motion >= self.motion_timeout:
             self.toggle_ui_hide(force_state='hide')
-        elif self.last_motion >= 0:
-            self.toggle_ui_hide(force_state='show')
+        #elif self.last_motion >= 0:
+        #    self.toggle_ui_hide(force_state='show')
 
         self.after(timer_period, self.check_motion)
 
